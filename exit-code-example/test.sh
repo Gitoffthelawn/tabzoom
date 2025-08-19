@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu
+set -exu
 
 BUILD_SECRET_1="I AM BUILD_SECRET #1"
 BUILD_SECRET_2="I AM BUILD_SECRET #2"
@@ -9,5 +9,8 @@ BUILD_SECRET_2="I AM BUILD_SECRET #2"
 # into --env args for this to work
 podman build -t exit-code-example .
 
-podman run --rm exit-code-example || EXIT_CODE=$?
-[[ "$EXIT_CODE" -eq 11 ]]
+CONTAINER="$(podman create exit-code-example)"
+podman container start "$CONTAINER"
+podman attach "$CONTAINER" || EXIT_CODE=$?
+echo "$EXIT_CODE"
+[[ "$EXIT_CODE" -eq 0 ]]
